@@ -6,6 +6,17 @@
 Ниже приведены все реализованные запросы с описанием параметров и примерными телами ответов.
 
 ## Пользователи
+Общие поля:
+- `tgId` (integer) — Telegram ID пользователя.
+- `userId` (integer) — внутренний ID пользователя.
+- `fullName` (string) — имя пользователя.
+- `role` (string) — роль пользователя.
+- `course` (integer) — курс обучения.
+- `program` (string) — учебная программа.
+- `email` (string) — email пользователя.
+- `isCompleteConference` (boolean) — признак завершения конференции.
+Общие параметры:
+- `telegramId` (integer) — Telegram ID пользователя.
 
 ### POST /users
 Описание: добавить пользователя.
@@ -38,7 +49,7 @@ Request body (application/json):
 Описание: получить данные пользователя.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200 (application/json):
 ```json
@@ -57,26 +68,39 @@ Path параметры:
 Описание: получить QR-код пользователя.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
-Ответ 200: `image/png` (бинарные данные)
+Ответ 200: `image/png`, бинарные данные
 
 ### POST /users/{telegramId}/survey
 Описание: отметить, что пользователь прошел опрос.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200: без тела
 
 ## Посещения
+Общие поля:
+- `target` (object) — цель посещения: компания или активность.
+- `targetType` (string) — тип цели: `COMPANY` или `ACTIVITY`.
+- `target.id` (integer) — идентификатор цели.
+- `target.name` (string) — название цели.
+- `target.description` (string) — описание цели.
+- `target.siteUrl` (string) — сайт компании.
+- `target.activityType` (string) — тип активности.
+- `target.location` (string) — место проведения активности.
+- `target.startTime` (time) — время начала активности.
+- `target.endTime` (time) — время окончания активности.
+- `target.points` (integer) — баллы за активность.
+- `target.hasEvent` (boolean) — признак наличия ивента у активности.
 
 ### POST /users/{telegramId}/visits/{code}
 Описание: отметить посещение активности/компании по коду.
 
 Path параметры:
-- `telegramId` (integer)
-- `code` (string)
+- `telegramId` (integer) — Telegram ID пользователя.
+- `code` (string) — код посещения.
 
 Ответ 200 (application/json):
 ```json
@@ -90,7 +114,6 @@ Path параметры:
   "targetType": "COMPANY"
 }
 ```
-Примечание: `target` может быть компанией или активностью (в этом случае вернутся поля активности).
 
 ### GET /users
 Описание: получить Telegram ID пользователей.
@@ -100,6 +123,9 @@ Query параметры:
 - `token` (integer) - токен/курсора для следующей страницы.
 
 Ответ 200 (application/json):
+Поля ответа:
+- `data` (array) — список Telegram ID.
+- `nextToken` (integer) — токен для следующей страницы.
 ```json
 {
   "data": [123456789, 987654321],
@@ -111,7 +137,7 @@ Query параметры:
 Описание: получить список посещений пользователя.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200 (application/json):
 ```json
@@ -143,6 +169,14 @@ Path параметры:
 ```
 
 ## Задания
+Общие поля:
+- `id` (integer) — идентификатор задания.
+- `type` (string) — тип задания.
+- `duration` (time) — длительность задания.
+- `name` (string) — название задания.
+- `status` (string) — статус задания.
+- `description` (string) — описание задания.
+- `points` (integer) — количество баллов.
 
 ### GET /tasks
 Описание: получить все задания.
@@ -193,7 +227,7 @@ Request body (application/json):
 Описание: получить задание по id.
 
 Path параметры:
-- `taskId` (integer)
+- `taskId` (integer) — идентификатор задания.
 
 Ответ 200 (application/json):
 ```json
@@ -212,10 +246,15 @@ Path параметры:
 Описание: выполнить задание.
 
 Path параметры:
-- `taskId` (integer)
-- `telegramId` (integer)
+- `taskId` (integer) — идентификатор задания.
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200 (application/json):
+Поля ответа:
+- `id` (integer) — идентификатор записи выполнения.
+- `userId` (integer) — идентификатор пользователя.
+- `taskId` (integer) — идентификатор задания.
+- `completeTime` (datetime) — время выполнения.
 ```json
 {
   "id": 1,
@@ -229,7 +268,7 @@ Path параметры:
 Описание: изменить статус задания.
 
 Path параметры:
-- `taskId` (integer)
+- `taskId` (integer) — идентификатор задания.
 
 Request body (application/json):
 ```json
@@ -252,7 +291,7 @@ Request body (application/json):
 ```
 
 ### POST /tasks/all/status
-Описание: изменить статус всех заданий (только завершение).
+Описание: изменить статус всех заданий, используется для завершения.
 
 Request body (application/json):
 ```json
@@ -264,12 +303,19 @@ Request body (application/json):
 Ответ 200: без тела
 
 ## Задания пользователя
+Общие поля:
+- `id` (integer) — идентификатор задания.
+- `name` (string) — название задания.
+- `description` (string) — описание задания.
+- `isAvailable` (boolean) — доступно ли задание пользователю.
+- `status` (string) — статус выполнения.
+- `taskType` (string) — тип задания для пользователя.
 
 ### GET /users/{telegramId}/tasks
 Описание: получить задания пользователя.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200 (application/json):
 ```json
@@ -289,8 +335,8 @@ Path параметры:
 Описание: получить конкретное задание пользователя.
 
 Path параметры:
-- `telegramId` (integer)
-- `taskId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
+- `taskId` (integer) — идентификатор задания.
 
 Ответ 200 (application/json):
 ```json
@@ -305,6 +351,8 @@ Path параметры:
 ```
 
 ## Предрегистрация
+Общие поля:
+- `tgId` (integer) — Telegram ID пользователя.
 
 ### POST /preregistration/users
 Описание: добавить пользователя в предрегистрацию.
@@ -327,7 +375,7 @@ Request body (application/json):
 Описание: получить данные предрегистрации.
 
 Path параметры:
-- `telegramId` (integer)
+- `telegramId` (integer) — Telegram ID пользователя.
 
 Ответ 200 (application/json):
 ```json
@@ -337,6 +385,13 @@ Path параметры:
 ```
 
 ## Компании
+Общие поля:
+- `id` (integer) — идентификатор компании.
+- `name` (string) — название компании.
+- `description` (string) — описание компании.
+- `siteUrl` (string) — сайт компании.
+Общие параметры:
+- `companyId` (integer) — идентификатор компании.
 
 ### POST /companies
 Описание: добавить компанию.
@@ -364,7 +419,7 @@ Request body (application/json):
 Описание: получить информацию о компании.
 
 Path параметры:
-- `companyId` (integer)
+- `companyId` (integer) — идентификатор компании.
 
 Ответ 200 (application/json):
 ```json
@@ -380,7 +435,7 @@ Path параметры:
 Описание: обновить информацию о компании.
 
 Path параметры:
-- `companyId` (integer)
+- `companyId` (integer) — идентификатор компании.
 
 Request body (application/json):
 ```json
@@ -405,11 +460,22 @@ Request body (application/json):
 Описание: удалить компанию.
 
 Path параметры:
-- `companyId` (integer)
+- `companyId` (integer) — идентификатор компании.
 
 Ответ 200: без тела
 
 ## Активности
+Общие поля:
+- `id` (integer) — идентификатор активности.
+- `name` (string) — название активности.
+- `description` (string) — описание активности.
+- `activityType` (string) — тип активности.
+- `location` (string) — место проведения.
+- `startTime` (time) — время начала.
+- `endTime` (time) — время окончания.
+- `hasEvent` (boolean) — признак наличия ивента.
+Общие параметры:
+- `activityId` (integer) — идентификатор активности.
 
 ### GET /activities
 Описание: получить все активности.
@@ -434,6 +500,10 @@ Path параметры:
 Описание: добавить новую активность.
 
 Request body (application/json):
+Поля запроса:
+- `type` (string) — тип активности (в запросе).
+- `keyWord` (string) — кодовое слово активности.
+- `points` (integer) — баллы за посещение.
 ```json
 {
   "name": "Собрание",
@@ -465,7 +535,7 @@ Request body (application/json):
 Описание: получить информацию об активности.
 
 Path параметры:
-- `activityId` (integer)
+- `activityId` (integer) — идентификатор активности.
 
 Ответ 200 (application/json):
 ```json
@@ -485,8 +555,8 @@ Path параметры:
 Описание: отметить посещение активности участником.
 
 Path параметры:
-- `activityId` (integer)
-- `userCode` (string)
+- `activityId` (integer) — идентификатор активности.
+- `userCode` (string) — код пользователя для отметки.
 
 Ответ 200 (application/json):
 ```json
@@ -506,8 +576,8 @@ Path параметры:
 Описание: скопировать посещения активности.
 
 Path параметры:
-- `activityId` (integer)
-- `toActivityId` (integer)
+- `activityId` (integer) — идентификатор исходной активности.
+- `toActivityId` (integer) — идентификатор целевой активности.
 
 Ответ 200: без тела
 
@@ -515,6 +585,9 @@ Path параметры:
 Описание: отправить кодовое слово от пользователя.
 
 Request body (application/json):
+Поля запроса:
+- `tgId` (integer) — Telegram ID пользователя.
+- `keyWord` (string) — кодовое слово активности.
 ```json
 {
   "tgId": 123456789,
@@ -525,12 +598,21 @@ Request body (application/json):
 Ответ 200: без тела
 
 ## Ивенты активности
+Общие поля:
+- `id` (integer) — идентификатор ивента.
+- `name` (string) — название ивента.
+- `description` (string) — описание ивента.
+- `duration` (time) — длительность ивента.
+- `status` (string) — статус ивента.
+- `answers` (array) — варианты ответов.
+Общие параметры:
+- `activityId` (integer) — идентификатор активности.
 
 ### GET /activities/{activityId}/event
 Описание: получить информацию об ивенте.
 
 Path параметры:
-- `activityId` (integer)
+- `activityId` (integer) — идентификатор активности.
 
 Ответ 200 (application/json):
 ```json
@@ -548,9 +630,12 @@ Path параметры:
 Описание: добавить новый ивент к активности.
 
 Path параметры:
-- `activityId` (integer)
+- `activityId` (integer) — идентификатор активности.
 
 Request body (application/json):
+Поля запроса:
+- `rightAnswer` (string) — правильный ответ.
+- `reward` (integer) — награда за правильный ответ.
 ```json
 {
   "name": "Голосование",
@@ -578,7 +663,7 @@ Request body (application/json):
 Описание: обновить статус ивента.
 
 Path параметры:
-- `activityId` (integer)
+- `activityId` (integer) — идентификатор активности.
 
 Request body (application/json):
 ```json
@@ -593,9 +678,12 @@ Request body (application/json):
 Описание: добавить ответ пользователя.
 
 Path параметры:
-- `activityId` (integer)
+- `activityId` (integer) — идентификатор активности.
 
 Request body (application/json):
+Поля запроса:
+- `userTgId` (integer) — Telegram ID пользователя.
+- `answer` (string) — ответ пользователя.
 ```json
 {
   "userTgId": 123456789,
@@ -604,6 +692,11 @@ Request body (application/json):
 ```
 
 Ответ 200 (application/json):
+Поля ответа:
+- `id` (integer) — идентификатор ответа.
+- `userId` (integer) — идентификатор пользователя.
+- `answer` (string) — ответ пользователя.
+- `eventId` (integer) — идентификатор ивента.
 ```json
 {
   "id": 1,
@@ -619,6 +712,9 @@ Request body (application/json):
 Описание: получить коды новых ролей.
 
 Request body (application/json):
+Поля запроса:
+- `count` (integer) — количество кодов.
+- `type` (string) — тип роли.
 ```json
 {
   "count": 3,
@@ -627,6 +723,8 @@ Request body (application/json):
 ```
 
 Ответ 200 (application/json):
+Поля ответа:
+- массив строк — коды ролей.
 ```json
 ["FOSfWRSGEq", "K2l3X9PqLm", "Zx7Vt1QwEr"]
 ```
@@ -635,6 +733,9 @@ Request body (application/json):
 Описание: добавить роль пользователю.
 
 Request body (application/json):
+Поля запроса:
+- `tgId` (integer) — Telegram ID пользователя.
+- `code` (string) — код активации роли.
 ```json
 {
   "tgId": 123456789,

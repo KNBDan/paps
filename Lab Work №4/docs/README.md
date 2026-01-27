@@ -82,15 +82,15 @@ http://localhost:8082
 Подробное описание методов в файле `requests.md`
 
 ## Тестирование методов в Postman
-Описание 8 методов в файле `postman_tests.md` с 2 запросами, состоящих из описания запроса и скриншорта ответа Postman 
+8 методов с тестами находятся в файле `postman_tests.md`, были протестированы следующие запросы 
 ### Компании
 - POST /companies - добавить компанию
 - GET /companies/{companyId} - получить компанию
 - PUT /companies/{companyId} - обновить компанию
 - DELETE /companies/{companyId} - удалить компанию
 ### Активности
+- GET /activities/{activityId} - получить активность
 - POST /activities - добавить активность
-- POST /activities/{activityId}/visit/{userCode} - отметить посещение активности
 ### Пользователи
 - POST /users - добавить пользователя
 - GET /users/{telegramId} - получить данные о пользователе
